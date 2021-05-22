@@ -1,4 +1,4 @@
-package model;
+package com.coldcoder.reddit.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

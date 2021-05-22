@@ -1,4 +1,4 @@
-package model;
+package com.coldcoder.reddit.model;
 
 import java.util.Arrays;
 
