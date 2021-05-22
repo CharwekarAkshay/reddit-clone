@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-
-import java.time.Instant;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -19,22 +16,19 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Entity
 @Builder
-public class Subreddit {
+public class Vote {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+    private Long voteId;
 
-    @NotBlank(message = "Community name is required")
-    private String name;
+    private VoteType voteType;
 
-    @NotBlank(message = "Description name is required")
-    private String description;
-
-    @OneToMany(fetch = LAZY)
-    private List<Post> post;
-
-    private Instant createdDate;
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "postId", referencedColumnName = "postId")
+    private Post post;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 }

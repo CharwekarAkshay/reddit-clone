@@ -1,15 +1,12 @@
 package model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 import java.time.Instant;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,23 +15,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
-public class Subreddit {
+@Table(name = "token")
+public class VerificationToken {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Community name is required")
-    private String name;
+    private String token;
 
-    @NotBlank(message = "Description name is required")
-    private String description;
-
-    @OneToMany(fetch = LAZY)
-    private List<Post> post;
-
-    private Instant createdDate;
-
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     private User user;
+
+    private Instant expiryDate;
 }
