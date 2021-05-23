@@ -1,6 +1,7 @@
 package com.coldcoder.reddit.service;
 
 import com.coldcoder.reddit.dto.RegisterRequest;
+import com.coldcoder.reddit.exception.SpringRedditException;
 import com.coldcoder.reddit.model.NotificationEmail;
 import com.coldcoder.reddit.model.User;
 import com.coldcoder.reddit.model.VerificationToken;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,7 +40,7 @@ public class AuthService {
         String token = generateVerificationToken(user);
         String body = "Thank you for signing up to Spring Reddit," +
                 "please click on link below to activate your account :" +
-                "http://localhost:8080/api/auth/accountVerficiation/" + token;
+                "http://localhost:8080/api/auth/accountVerification/" + token;
 
         mailService.sendMail(
                 new NotificationEmail(
@@ -60,4 +62,19 @@ public class AuthService {
         return token;
     }
 
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+    @Transactional
+    public void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new SpringRedditException("User not " +
+                "found " +
+                "with name :" + username));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 }
