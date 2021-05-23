@@ -1,5 +1,7 @@
 package com.coldcoder.reddit.controller;
 
+import com.coldcoder.reddit.dto.AuthenticationResponse;
+import com.coldcoder.reddit.dto.LoginRequest;
 import com.coldcoder.reddit.dto.RegisterRequest;
 import com.coldcoder.reddit.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -23,5 +25,11 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
         return new ResponseEntity<String>("Account Activated Successfully", HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) {
+        AuthenticationResponse response = authService.login(loginRequest);
+        return new ResponseEntity<AuthenticationResponse>(response, HttpStatus.OK);
     }
 }
