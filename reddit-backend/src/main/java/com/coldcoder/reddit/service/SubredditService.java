@@ -1,6 +1,6 @@
 package com.coldcoder.reddit.service;
 
-import com.coldcoder.reddit.dto.SubbredditDto;
+import com.coldcoder.reddit.dto.SubredditDto;
 import com.coldcoder.reddit.model.Subreddit;
 import com.coldcoder.reddit.repository.SubredditRepository;
 import lombok.AllArgsConstructor;
@@ -10,41 +10,39 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @AllArgsConstructor
 public class SubredditService {
     private final SubredditRepository subredditRepository;
 
     @Transactional
-    public SubbredditDto save(SubbredditDto subbredditDto) {
-        Subreddit subreddit = mapSubredditDto(subbredditDto);
+    public SubredditDto save(SubredditDto subredditDto) {
+        Subreddit subreddit = mapSubredditDto(subredditDto);
         Subreddit save = subredditRepository.save(subreddit);
-        subbredditDto.setId(save.getId());
-        return subbredditDto;
+        subredditDto.setId(save.getId());
+        return subredditDto;
     }
 
     @Transactional(readOnly = true)
-    public List<SubbredditDto> getAll() {
+    public List<SubredditDto> getAll() {
         return subredditRepository.findAll()
                                   .stream()
                                   .map(this::mapToDto)
                                   .collect(Collectors.toList());
     }
 
-    private SubbredditDto mapToDto(Subreddit subreddit) {
-        return SubbredditDto.builder()
-                            .name(subreddit.getName())
-                            .id(subreddit.getId())
-                            .numberOfPosts(subreddit.getPost().size())
-                            .build();
+    private SubredditDto mapToDto(Subreddit subreddit) {
+        return SubredditDto.builder()
+                           .name(subreddit.getName())
+                           .id(subreddit.getId())
+                           .numberOfPosts(subreddit.getPost().size())
+                           .build();
     }
 
-    private Subreddit mapSubredditDto(SubbredditDto subbredditDto) {
+    private Subreddit mapSubredditDto(SubredditDto subredditDto) {
         return Subreddit.builder()
-                        .name(subbredditDto.getName())
-                        .description(subbredditDto.getDescription())
+                        .name(subredditDto.getName())
+                        .description(subredditDto.getDescription())
                         .build();
     }
 }
