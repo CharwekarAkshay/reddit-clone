@@ -1,9 +1,11 @@
 package com.coldcoder.reddit.security;
 
 import com.coldcoder.reddit.exception.SpringRedditException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.time.Instant;
 
+import static io.jsonwebtoken.Jwts.parserBuilder;
 import static java.util.Date.from;
 
 @Service
@@ -22,8 +25,9 @@ import static java.util.Date.from;
 public class JwtProvider {
 
     private KeyStore keyStore;
-//    @Value("${jwt.expiration.time}")
-    private Long jwtExpirationInMillis = 100000l;
+
+    @Value("${jwt.expiration.time}")
+    private Long jwtExpirationInMillis;
 
     @PostConstruct
     public void init() {
@@ -54,5 +58,27 @@ public class JwtProvider {
             throw new SpringRedditException("Exception occurred while retrieving public key from keystore");
 
         }
+    }
+
+    public boolean validateToken(String jwt) {
+        parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jwt);
+        return true;
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("mykey").getPublicKey();
+        } catch (KeyStoreException exception) {
+            throw new SpringRedditException("Exception occurred while retrieving public key from keystore");
+        }
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = parserBuilder()
+                .setSigningKey(getPublicKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }
