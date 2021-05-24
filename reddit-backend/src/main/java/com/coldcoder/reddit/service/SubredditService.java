@@ -35,7 +35,7 @@ public class SubredditService {
         return SubredditDto.builder()
                            .name(subreddit.getName())
                            .id(subreddit.getId())
-                           .numberOfPosts(subreddit.getPost().size())
+                           .numberOfPosts(subreddit.getPosts().size())
                            .build();
     }
 
