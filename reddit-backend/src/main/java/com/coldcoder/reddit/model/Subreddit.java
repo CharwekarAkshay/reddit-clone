@@ -18,7 +18,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 public class Subreddit {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -38,12 +37,4 @@ public class Subreddit {
     @ManyToOne(fetch = LAZY)
     private User user;
 
-    // Added getter setter to support map struct
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
 }

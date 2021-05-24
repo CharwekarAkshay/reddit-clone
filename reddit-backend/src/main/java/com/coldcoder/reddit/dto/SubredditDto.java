@@ -8,19 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class SubredditDto {
     private Long id;
     private String name;
     private String description;
     private Integer numberOfPosts;
-
-    // Added getter setter to solve map struct issue
-    public Integer getNumberOfPosts() {
-        return numberOfPosts;
-    }
-
-    public void setNumberOfPosts(Integer numberOfPosts) {
-        this.numberOfPosts = numberOfPosts;
-    }
 }
