@@ -18,7 +18,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 public class Subreddit {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -31,10 +30,11 @@ public class Subreddit {
     private String description;
 
     @OneToMany(fetch = LAZY)
-    private List<Post> post;
+    private List<Post> posts;
 
     private Instant createdDate;
 
     @ManyToOne(fetch = LAZY)
     private User user;
+
 }

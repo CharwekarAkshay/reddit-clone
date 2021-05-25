@@ -1,6 +1,6 @@
 package com.coldcoder.reddit.controller;
 
-import com.coldcoder.reddit.dto.SubbredditDto;
+import com.coldcoder.reddit.dto.SubredditDto;
 import com.coldcoder.reddit.service.SubredditService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +19,21 @@ public class SubredditController {
     private final SubredditService subredditService;
 
     @PostMapping
-    public ResponseEntity<SubbredditDto> createSubreddit(@RequestBody SubbredditDto subbredditDto) {
+    public ResponseEntity<SubredditDto> createSubreddit(@RequestBody SubredditDto subredditDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(subredditService.save(subbredditDto));
+                             .body(subredditService.save(subredditDto));
     }
 
     @GetMapping
-    public ResponseEntity<List<SubbredditDto>> getAllSubreddits() {
+    public ResponseEntity<List<SubredditDto>> getAllSubreddits() {
         return ResponseEntity.status(HttpStatus.OK)
                              .body(subredditService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SubredditDto> getSubreddit(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(subredditService.getSubreddit(id));
     }
 }
