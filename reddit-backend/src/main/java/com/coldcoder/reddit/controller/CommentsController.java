@@ -9,12 +9,7 @@ import com.coldcoder.reddit.dto.CommentsDto;
 import com.coldcoder.reddit.service.CommentService;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
 
@@ -30,12 +25,12 @@ public class CommentsController {
 	}
 
 	@GetMapping("/by-post/{postId}")
-	public ResponseEntity<List<CommentsDto>> getAllCommentsFromPost(@RequestParam("id") Long postId) {
+	public ResponseEntity<List<CommentsDto>> getAllCommentsFromPost(@PathVariable Long postId) {
 		return ResponseEntity.status(OK).body(commentService.getCommentsByPost(postId));
 	}
 
 	@GetMapping("/by-user/{userName}")
-	public ResponseEntity<List<CommentsDto>> getAllCommentsByUser(@RequestParam("userName") String userName) {
+	public ResponseEntity<List<CommentsDto>> getAllCommentsByUser(@PathVariable String userName) {
 		return ResponseEntity.status(OK).body(commentService.getCommentsByUser(userName));
 	}
 }

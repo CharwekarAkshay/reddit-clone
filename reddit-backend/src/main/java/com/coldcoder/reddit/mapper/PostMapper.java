@@ -5,21 +5,13 @@ import com.coldcoder.reddit.dto.PostResponse;
 import com.coldcoder.reddit.model.Post;
 import com.coldcoder.reddit.model.Subreddit;
 import com.coldcoder.reddit.model.User;
-import com.coldcoder.reddit.model.Vote;
-import com.coldcoder.reddit.model.VoteType;
 import com.coldcoder.reddit.repository.CommentRepository;
 import com.coldcoder.reddit.repository.VoteRepository;
 import com.coldcoder.reddit.service.AuthService;
-
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static com.coldcoder.reddit.model.VoteType.UP_VOTE;
-
-import java.util.Optional;
-
-import static com.coldcoder.reddit.model.VoteType.DOWN_VOTE;
 
 @Mapper(componentModel = "spring")
 public abstract class PostMapper {
@@ -42,10 +34,14 @@ public abstract class PostMapper {
     @Mapping(target = "subredditName", source = "subreddit.name")
     @Mapping(target = "userName", source = "user.username")
     @Mapping(target = "commentCount", expression = "java(commentCount(post))")
+    @Mapping(target = "duration", expression = "java(getDuration(post))")
     public abstract PostResponse mapToDto(Post post);
 
     Integer commentCount(Post post) {
         return commentRepository.findAllByPost(post).size();
     }
 
+    String getDuration(Post post) {
+        return TimeAgo.using(post.getCreatedDate().toEpochMilli());
+    }
 }

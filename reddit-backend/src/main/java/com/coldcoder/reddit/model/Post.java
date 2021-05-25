@@ -16,7 +16,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Data
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
