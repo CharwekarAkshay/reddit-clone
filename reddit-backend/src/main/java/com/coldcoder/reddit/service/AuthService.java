@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,7 @@ public class AuthService {
                         user.getEmail(),
                         body
                 )
-        );
+                            );
     }
 
     private String generateVerificationToken(User user) {
@@ -81,17 +82,31 @@ public class AuthService {
     @Transactional
     public void fetchUserAndEnable(VerificationToken verificationToken) {
         String username = verificationToken.getUser().getUsername();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new SpringRedditException("User not " +
-                "found " +
-                "with name :" + username));
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new SpringRedditException("User not " +
+                                                                     "found " +
+                                                                     "with" +
+                                                                     " name :" + username));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+        return userRepository.findByUsername(principal.getUsername())
+                             .orElseThrow(() -> new UsernameNotFoundException("Username not found - " + principal.getUsername()));
     }
 
     public AuthenticationResponse login(LoginRequest loginRequest) {
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+                                                                                           loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtProvider.generateToken(authentication);
         return new AuthenticationResponse(token, loginRequest.getUsername());
