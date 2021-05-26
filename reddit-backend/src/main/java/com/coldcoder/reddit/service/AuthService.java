@@ -1,5 +1,9 @@
 package com.coldcoder.reddit.service;
 
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+
 import com.coldcoder.reddit.dto.AuthenticationResponse;
 import com.coldcoder.reddit.dto.LoginRequest;
 import com.coldcoder.reddit.dto.RefreshTokenRequest;
@@ -11,21 +15,17 @@ import com.coldcoder.reddit.model.VerificationToken;
 import com.coldcoder.reddit.repository.UserRepository;
 import com.coldcoder.reddit.repository.VerificationTokenRepository;
 import com.coldcoder.reddit.security.JwtProvider;
-import lombok.AllArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
