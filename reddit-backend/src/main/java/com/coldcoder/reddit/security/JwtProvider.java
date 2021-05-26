@@ -51,6 +51,15 @@ public class JwtProvider {
                    .compact();
     }
 
+    public String generateTokenWithUserName(String username) {
+        return Jwts.builder()
+                   .setSubject(username)
+                   .setIssuedAt(from(Instant.now()))
+                   .signWith(getPrivateKey())
+                   .setExpiration(from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                   .compact();
+    }
+
     private PrivateKey getPrivateKey() {
         try {
             return (PrivateKey) keyStore.getKey("mykey", "password".toCharArray());
@@ -80,5 +89,9 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+    public Long getJwtExpirationInMillis() {
+        return jwtExpirationInMillis;
     }
 }

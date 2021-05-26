@@ -2,6 +2,7 @@ package com.coldcoder.reddit.service;
 
 import com.coldcoder.reddit.dto.AuthenticationResponse;
 import com.coldcoder.reddit.dto.LoginRequest;
+import com.coldcoder.reddit.dto.RefreshTokenRequest;
 import com.coldcoder.reddit.dto.RegisterRequest;
 import com.coldcoder.reddit.exception.SpringRedditException;
 import com.coldcoder.reddit.model.NotificationEmail;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class AuthService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -59,7 +62,7 @@ public class AuthService {
                         user.getEmail(),
                         body
                 )
-                            );
+        );
     }
 
     private String generateVerificationToken(User user) {
@@ -85,9 +88,9 @@ public class AuthService {
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new SpringRedditException("User not " +
-                                                                     "found " +
-                                                                     "with" +
-                                                                     " name :" + username));
+                        "found " +
+                        "with" +
+                        " name :" + username));
         user.setEnabled(true);
         userRepository.save(user);
     }
@@ -106,9 +109,25 @@ public class AuthService {
     public AuthenticationResponse login(LoginRequest loginRequest) {
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                                                                                           loginRequest.getPassword()));
+                        loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtProvider.generateToken(authentication);
-        return new AuthenticationResponse(token, loginRequest.getUsername());
+        return AuthenticationResponse.builder()
+                                     .authenticationToken(token)
+                                     .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                                     .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                                     .username(loginRequest.getUsername())
+                                     .build();
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                                     .authenticationToken(token)
+                                     .refreshToken(refreshTokenRequest.getRefreshToken())
+                                     .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                                     .username(refreshTokenRequest.getUsername())
+                                     .build();
     }
 }
