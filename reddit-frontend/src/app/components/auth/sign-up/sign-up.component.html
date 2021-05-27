@@ -5,7 +5,7 @@
                 <h4>Register</h4>
             </div>
             <div class="card-body">
-                <form [formGroup]="signUpForm">
+                <form [formGroup]="signUpForm" (ngSubmit)="signup()">
                     <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="20px">
                         <div class="form-group" fxLayout="row">
                             <label for="email_address" fxFlex="40">E-Mail

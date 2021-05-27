@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {SignUpRequestPayload} from "../../../../types";
+import {AuthService} from "../shared/auth.service";
 
 @Component({
   selector: 'app-sign-up',
@@ -9,8 +11,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class SignUpComponent implements OnInit {
 
   signUpForm: FormGroup;
+  signUpRequestPayload?: SignUpRequestPayload;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.signUpForm = new FormGroup({
       username: new FormControl("", [Validators.required]),
       email: new FormControl("", [Validators.required, Validators.email]),
@@ -21,4 +24,15 @@ export class SignUpComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  signup() {
+    this.signUpRequestPayload = this.signUpForm.value;
+    this.authService.signup(this.signUpRequestPayload).subscribe(
+      value => {
+        console.log(value);
+      },
+      error => {
+        console.log("Something went wrong");
+      }
+    );
+  }
 }
