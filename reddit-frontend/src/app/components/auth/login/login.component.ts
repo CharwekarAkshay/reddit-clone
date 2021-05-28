@@ -6,31 +6,30 @@ import { AuthService } from '../shared/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-
   loginForm: FormGroup;
   loginRequestPayload?: LoginRequestPayload;
 
-
   constructor(private authService: AuthService) {
     this.loginForm = new FormGroup({
-      username: new FormControl("", [Validators.required]),
-      password: new FormControl("", [Validators.required]),
+      username: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required]),
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   login(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAsTouched();
     } else {
       this.loginRequestPayload = this.loginForm.value;
-      this.authService.login(this.loginRequestPayload);
+      this.authService.login(this.loginRequestPayload).subscribe(
+        (data) => console.log(data),
+        (error) => console.log(error)
+      );
     }
   }
-
 }
